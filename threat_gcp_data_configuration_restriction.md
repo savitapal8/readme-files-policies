@@ -84,3 +84,17 @@ The below function is being used to validate the value of parameter "inspect_job
 	   }
     }
 ```
+
+#### Main Rule
+The main function returns true/false as per value of GCP_DLP_TRIGGER and GCP_DLP_SAVEFINDINGS.
+```
+GCP_DLP_TRIGGER = rule {
+ 	length(messages_trigger) is 0 
+}
+
+GCP_DLP_SAVEFINDINGS = rule {
+ 	length(messages_save_findings) is 0 
+}
+
+main = rule { GCP_DLP_TRIGGER and GCP_DLP_SAVEFINDINGS }
+```

@@ -45,3 +45,12 @@ The below function is being used to validate the value of parameter "enable_http
 	}
   }
   ```
+
+#### Main Rule
+The main function returns true/false as per value of GCP_SSL_ENFORCE 
+```
+GCP_SSL_ENFORCE = rule {
+	length(messages_http) is 0
+}
+
+main = rule { GCP_SSL_ENFORCE }

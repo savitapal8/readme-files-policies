@@ -49,3 +49,13 @@ The below function is being used to validate the value of parameter "internal_ip
 	}
   }
   ```
+
+#### Main Rule
+The main function returns true/false as per value of GCP_INTERNAL_IP 
+```
+GCP_INTERNAL_IP = rule {
+ 	length(messages_ip_internal) is 0 
+}
+
+main = rule { GCP_INTERNAL_IP }
+```

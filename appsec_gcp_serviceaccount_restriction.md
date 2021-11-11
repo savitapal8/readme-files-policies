@@ -64,3 +64,13 @@ The below function is being used to validate the value of parameter "service_acc
 	}	
   }
   ```
+
+#### Main Rule
+The main function returns true/false as per value of SVC_ACCOUNT_CHECK 
+```
+SVC_ACCOUNT_CHECK = rule {
+  	length(messages_sa) is 0 
+}
+
+main = rule { SVC_ACCOUNT_CHECK }
+```
