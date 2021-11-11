@@ -23,37 +23,36 @@ The below function is being used to validate the value of parameter "recurrence_
   |address|The key inside of resource_changes section for particular GCP Resource in tfplan mock|
   |rc|The value of address key inside of resource_changes section for particular GCP Resource in tfplan mock|
       
-```
-      check_job_trigger = func(address, rc) {
+  ```
+  check_job_trigger = func(address, rc) {
 
 	    key = resourceTypesDLPJTMap[rc.type]["key"]
-	
+
 	    selected_node = plan.evaluate_attribute(rc, key)
-	
+
 	    if types.type_of(selected_node) is "null" {
 		    return plan.to_string(address) + " does not have " + key +" defined"
 	    } else {
-		
+
 		 result = strings.has_suffix(selected_node, "s")
 
 		 min_val = 86400
 		 max_val = 86400 * 60
-		
+
 		 if selected_node is not "" and result is true {
-		   	str_value = strings.split(selected_node,"s")[0]
-			
+			str_value = strings.split(selected_node,"s")[0]
+
 			if float(str_value) >= float(min_val) and float(str_value) <= float(max_val) {
 				return null 
 			} else {
-				return plan.to_string(address) +  " recurrence_period_duration must be set to a time duration greater than or equal to 1 day and can be no longer than 60 days."							
+				return plan.to_string(address) +  " recurrence_period_duration must be set to a time duration greater than or equal to 1 day and can be no  longer than 60 days."							
 			}
 		 } else {
 			return plan.to_string(address) +  " recurrence_period_duration is not having valid input, please provide correctly"				
 		}
 	  }
-    }
-
-```
+  }
+  ```
 
 The below function is being used to validate the value of parameter "inspect_job.0.actions.0.save_findings.0.output_config.0.table.0.dataset_id". As per the policy, its value can not be null/empty and must be proper valid dataset_id. If the policy won't be validated successfully, it will generate appropriate message to show the users. This function will have below 2-parameters:
 
@@ -63,8 +62,8 @@ The below function is being used to validate the value of parameter "inspect_job
   |address|The key inside of resource_changes section for particular GCP Resource in tfplan mock|
   |rc|The value of address key inside of resource_changes section for particular GCP Resource in tfplan mock|
 
-```
-      check_save_findings = func(address, rc) {
+  ```
+  check_save_findings = func(address, rc) {
 
 	     key = resourceTypesDLPSFMap[rc.type]["inspect_key"]
 	     selected_node = plan.evaluate_attribute(rc, key)
@@ -82,8 +81,8 @@ The below function is being used to validate the value of parameter "inspect_job
 			   return plan.to_string(address) +  " dataset id is not having valid input, please provide correctly"			
 		  }
 	   }
-    }
-```
+  }
+  ```
 
 #### Working Code
 ```
