@@ -65,6 +65,27 @@ The below function is being used to validate the value of parameter "service_acc
   }
   ```
 
+#### Working Code
+```
+messages_sa = {}
+for resourceTypesServiceAccountMap as key_address, _ {
+	# Get all the instances on the basis of type
+	allResources = plan.find_resources(key_address)
+	for allResources as address, rc {
+
+		message = null		
+		message = check_service_account_config(address, rc)
+		if types.type_of(message) is not "null" {
+		
+			gen.create_sub_main_key_list(messages, messages_sa, address)
+			
+			append(messages_sa[address],message)
+			append(messages[address],message)
+		}
+	}
+}
+```
+
 #### Main Rule
 The main function returns true/false as per value of SVC_ACCOUNT_CHECK 
 ```

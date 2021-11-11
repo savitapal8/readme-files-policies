@@ -46,6 +46,31 @@ The below function is being used to validate the value of parameter "enable_http
   }
   ```
 
+#### Working Code
+```
+messages_http = {}
+
+for resourceTypesSSLEnforceMap as key_address, _ {
+	
+	# Get all the instances on the basis of type
+	allResources = plan.find_resources(key_address)
+	
+	for allResources as address, rc {
+		message = null
+		message = check_endpoint_config(address, rc)
+
+		if types.type_of(message) is not "null"{
+			
+			gen.create_sub_main_key_list( messages, messages_http, address)
+
+			append(messages_http[address],message)
+			append(messages[address],message)
+
+		}
+	}
+}
+```
+
 #### Main Rule
 The main function returns true/false as per value of GCP_SSL_ENFORCE 
 ```

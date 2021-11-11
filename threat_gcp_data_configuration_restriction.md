@@ -85,6 +85,49 @@ The below function is being used to validate the value of parameter "inspect_job
     }
 ```
 
+#### Working Code
+```
+messages_trigger = {}
+
+for resourceTypesDLPJTMap as key_address, _ {
+	# Get all the instances on the basis of type
+	allResources = plan.find_resources(key_address)
+	for allResources as address, rc {
+		message = null
+		message = check_job_trigger(address, rc)
+
+		if types.type_of(message) is not "null" {
+
+			gen.create_sub_main_key_list(messages, messages_trigger, address)
+			
+			append(messages_trigger[address],message)
+			append(messages[address],message)
+		} 	
+	}
+}
+```
+
+```
+messages_save_findings = {}
+
+for resourceTypesDLPSFMap as key_address, _ {
+	# Get all the instances on the basis of type
+	allResources = plan.find_resources(key_address)
+	for allResources as address, rc {
+		message = null
+		message = check_save_findings(address, rc)
+
+		if types.type_of(message) is not "null" {
+
+			gen.create_sub_main_key_list(messages, messages_save_findings, address)
+			
+			append(messages_save_findings[address],message)
+			append(messages[address],message)
+		} 	
+	}
+}
+```
+
 #### Main Rule
 The main function returns true/false as per value of GCP_DLP_TRIGGER and GCP_DLP_SAVEFINDINGS.
 ```

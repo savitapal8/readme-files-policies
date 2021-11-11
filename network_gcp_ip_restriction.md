@@ -50,6 +50,28 @@ The below function is being used to validate the value of parameter "internal_ip
   }
   ```
 
+#### Working Code
+```
+messages_ip_internal = {}
+
+for resourceTypesInternalIPMap as key_address, _ {
+	# Get all the instances on the basis of type
+	allResources = plan.find_resources(key_address)
+	for allResources as address, rc {
+		message = null
+		message = check_internal_ip(address, rc)
+
+		if types.type_of(message) is not "null" {
+
+			gen.create_sub_main_key_list(messages, messages_ip_internal, address)
+			
+			append(messages_ip_internal[address],message)
+			append(messages[address],message)
+		} 	
+	}
+}
+```
+
 #### Main Rule
 The main function returns true/false as per value of GCP_INTERNAL_IP 
 ```
