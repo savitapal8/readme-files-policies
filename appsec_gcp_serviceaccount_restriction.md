@@ -77,7 +77,7 @@ The below function is being used to validate the value of parameter "service_acc
   ```
 
 #### Working Code
-The below code will iterate each memeber of resourceTypesServiceAccountMap, which will belong to any service eg. google_compute_instance/google_dataproc_cluster etc and each member will have path of its service account as value. The code will evaluate the service account's information by using this value and validate the said policy. 
+The below code will iterate each member of resourceTypesServiceAccountMap, which will belong to any resource eg. google_compute_instance/google_dataproc_cluster etc and each member will have path of its service account as value. The code will evaluate the service account's information by using this value and validate the said policy. 
 
 ```
 messages_sa = {}
