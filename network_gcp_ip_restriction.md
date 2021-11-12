@@ -18,7 +18,7 @@ import "generic-functions" as gen
 |messages| It is being used to hold the complete message of policies violation to show to the user.|
 
 #### Maps
-The below map is having entries of the GCP resources in key/value pair, those are required to be validated for ip restriction policy. Key will be name of the GCP terraform resource ("https://registry.terraform.io/providers/hashicorp/google/latest/docs") and its value will be again combination of key/value pair. Here now key will be ```key``` only and value will be the path of internal ip node. Since this is the generic one and can validate internal ip associated with any google resource. In order to validate, just need to add corresponding entry of particular GCP terraform resource with the path of its service account in the below map as given for google_dataproc_cluster or example_rsc.
+The below map is having entries of the GCP resources in key/value pair, those are required to be validated for ip restriction policy. Key will be name of the GCP terraform resource ("https://registry.terraform.io/providers/hashicorp/google/latest/docs") and its value will be again combination of key/value pair. Here now key will be ```key``` only and value will be the path of internal_ip_only node. Since this is the generic one and can validate internal ip associated with any google resource. In order to validate, just need to add corresponding entry of particular GCP terraform resource with the path of its service account in the below map as given for google_dataproc_cluster or example_rsc.
 ```
 resourceTypesInternalIPMap = {	
 	"google_dataproc_cluster": {
@@ -31,7 +31,7 @@ resourceTypesInternalIPMap = {
 ```
 
 #### Methods
-The below function is being used to validate the value of parameter "internal_ip_only". As per the policy, its value needs to be true and it can not be empty/null. If the policy won't be validated successfully, it will generate appropriate message to show the users. This function will have below 2-parameters:
+The below function is being used to validate the value of parameter ```internal_ip_only``` As per the policy, its value needs to be true and it can not be empty/null. If the policy won't be validated successfully, it will generate appropriate message to show the users. This function will have below 2-parameters:
 
 * Parameters
 
@@ -59,7 +59,7 @@ The below function is being used to validate the value of parameter "internal_ip
   ```
 
 #### Working Code
-The below code will iterate each member of resourceTypesInternalIPMa, which will belong to any resource eg. google_dataproc_cluster etc and each member will have path of its service account as value. The code will evaluate the service account's information by using this value and validate the said policy.
+The below code will iterate each member of resourceTypesInternalIPMa, which will belong to any resource eg. google_dataproc_cluster etc and each member will have path of its internal_ip_only as value. The code will evaluate the internal_ip_only's information by using this value and validate the said policy.
 ```
 messages_ip_internal = {}
 
