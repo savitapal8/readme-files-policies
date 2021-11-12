@@ -19,7 +19,7 @@ import "generic-functions" as gen
 |default_compute_sa|This is having email id of default compute service account to validate.|
 
 #### Maps
-The below map is having entries of the GCP resources in key/value pair, those are required to be validated for Service Account policy. Key will be name of the GCP terraform resource ("https://registry.terraform.io/providers/hashicorp/google/latest/docs") and its value will be again combination of key/value pair. Here now key will be "key" only and value will be the path of service account node. Since this is the generic one and can validate service account associated with any google resource. In order to validate, just need to add corresponding entry of particular GCP terraform resource with the path of its service account in the below map as given from line# 31 to line# 33. 
+The below map is having entries of the GCP resources in key/value pair, those are required to be validated for Service Account policy. Key will be name of the GCP terraform resource ("https://registry.terraform.io/providers/hashicorp/google/latest/docs") and its value will be again combination of key/value pair. Here now key will be ```key``` only and value will be the path of service account node. Since this is the generic one and can validate service account associated with any google resource. In order to validate, just need to add corresponding entry of particular GCP terraform resource with the path of its service account in the below map as given for ```example_rsc```. 
 ```
 resourceTypesServiceAccountMap = {
 	"google_compute_instance" : {
