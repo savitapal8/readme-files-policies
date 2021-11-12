@@ -18,9 +18,17 @@ import "generic-functions" as gen
 |messages|It is being used to hold the complete message of policies violation to show to the user.|
 
 #### Maps
-|Name|Description|
-|----|-----|
-|resourceTypesSSLEnforceMap|This is the map, being used to have path of nodes for the respective gcp service for SSL Enforcement policy.|
+The below map is having entries of the GCP resources in key/value pair, those are required to be validated for SSL enforcement policy. Key will be name of the GCP terraform resource ("https://registry.terraform.io/providers/hashicorp/google/latest/docs") and its value will be again combination of key/value pair. Here now key will be ```key``` only and value will be the path of enable_http_port_access node. Since this is the generic one and can validate enable_http_port_access associated with any GCP resource. In order to validate, just need to add corresponding entry of particular GCP terraform resource with the path of its enable_http_port_access in the below map as given for google_dataproc_cluster or example_rsc.
+```
+resourceTypesSSLEnforceMap = {	
+	"google_dataproc_cluster": {
+		"key":   	"cluster_config.0.endpoint_config.0.enable_http_port_access",
+	},
+	"example_rsc": {
+	     "key": "someroot.service_account",
+	},
+}
+```
 
 #### Methods
 The below function is being used to validate the value of parameter "enable_http_port_access". As per the policy, its value can not be true. If the policy will not be validated successfully, it will generate appropriate message to show the users. This function will have below 2-parameters:
@@ -47,6 +55,7 @@ The below function is being used to validate the value of parameter "enable_http
   ```
 
 #### Working Code
+The below code will iterate each member of resourceTypesSSLEnforceMap, which will belong to any resource eg. google_dataproc_cluster etc and each member will have path of its enable_http_port_access as value. The code will evaluate the enable_http_port_access's information by using this value and validate the said policy.
 ```
 messages_http = {}
 
