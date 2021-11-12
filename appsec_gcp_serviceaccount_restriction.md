@@ -19,9 +19,17 @@ import "generic-functions" as gen
 |default_compute_sa|This is having email id of default compute service account to validate.|
 
 #### Maps
-|Name|Description|
-|----|-----|
-|resourceTypesServiceAccountMap|This is the map, being used to have path of node for the respective gcp service for Service Account policy. Here Key is having complete path of particular node.|
+The below map is having entries of the gcp resources in key/value pair, those are required to be validated for Service Account policy. Key will be name of the gcp resource api and its value will be again combination of key/value pair, here value will be path of service account node.
+```
+resourceTypesServiceAccountMap = {
+	"google_compute_instance" : {
+		"key":   "service_account.0.email",
+	},
+	"google_dataproc_cluster": {
+		"key":   "cluster_config.0.gce_cluster_config.0.service_account",
+	},
+}
+```
 
 #### Methods
 The below function is being used to validate the value of parameter "service_account". As per the policy, SA can not be empty/null otherwise it will take default compute service account later on. There must be either reference of service account resource or any email. If the policy won't be validated successfully, it will generate appropriate message to show the users. This function will have below 2-parameters:
@@ -66,6 +74,8 @@ The below function is being used to validate the value of parameter "service_acc
   ```
 
 #### Working Code
+The below code will iterate each memeber of resourceTypesServiceAccountMap, which will belong to any service eg. google_compute_instance/google_dataproc_cluster etc and each member will have path of its service account as value. The code will evaluate the service account's information by using this value and validate the said policy. 
+
 ```
 messages_sa = {}
 for resourceTypesServiceAccountMap as key_address, _ {
