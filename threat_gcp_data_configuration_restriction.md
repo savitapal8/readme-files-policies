@@ -9,10 +9,32 @@
 |messages|It is being used to hold the complete message of policies violation to show to the user.|
 
 #### Maps
-|Name|Description|
-|----|-----|
-|resourceTypesDLPJTMap|This is the map, being used to have path of node for the respective gcp service for Job  Trigger policy. Here Key is having complete path of particular node.|
-|resourceTypesDLPSFMap|This is the map, being used to have path of nodes for the respective gcp service for Save Finding policy. It is having two enteries with two keys "key" and "inspect_key". As per the policy, "inspect_job.0.actions.0.save_findings.0.output_config.0.table.0.dataset_id" needs to have appropriate value for the dataset_id. As per terraform, inspect_job is not required section, so "inspect_job" & "dataset_id" both need to be validated for null/empty.|
+The below map is having entries of the GCP resources in key/value pair, those are required to be validated for Job Trigger policy. Key will be name of the GCP terraform resource ("https://registry.terraform.io/providers/hashicorp/google/latest/docs") and its value will be again combination of key/value pair. Here now key will be ```key``` only and value will be the path of recurrence_period_duration node. Since this is the generic one and can validate recurrence_period_duration associated with any google resource. In order to validate, just need to add corresponding entry of particular GCP terraform resource with the path of its recurrence_period_duration in the below map as given for google_data_loss_prevention_job_trigger or example_rsc.
+```
+resourceTypesDLPJTMap = {	
+	"google_data_loss_prevention_job_trigger": {
+		"key":   "triggers.0.schedule.0.recurrence_period_duration",
+	},
+	   "example_rsc": {
+	        "key": "recurrence_period_duration",
+        },
+}
+```
+The below map is having entries of the GCP resources in key/value pair, those are required to be validated for Save Finding  policy. It is having two enteries with two keys ```key``` and ```inspect_key```. As per the policy, ```inspect_job.0.actions.0.save_findings.0.output_config.0.table.0.dataset_id``` needs to have appropriate value for the ```dataset_id```. As per terraform, ```inspect_job``` is not required section, so ```inspect_job``` & ```dataset_id``` both need to be validated for null/empty. Key will be name of the GCP terraform resource ("https://registry.terraform.io/providers/hashicorp/google/latest/docs") and its value will be again combination of two key/value pair. Here now first key will be ```key``` only and value will be the path of dataset_id node and for second, key will be ```inspect_key``` and value will be path of inspect_job.
+
+Since this is the generic one and can validate dataset_id associated with any GCP resource. In order to validate, just need to add corresponding entry of particular GCP terraform resource with the path of its dataset_id in the below map as given for google_data_loss_prevention_job_trigger or example_rsc.
+```
+resourceTypesDLPSFMap = {	
+	"google_data_loss_prevention_job_trigger": {
+		"key":   "inspect_job.0.actions.0.save_findings.0.output_config.0.table.0.dataset_id",
+		"inspect_key" : "inspect_job",
+	},
+	 "example_rsc": {
+	        "key": "example_dataset_id",
+		"inspect_key" : "inspect_job",
+        },
+}
+```
 
 #### Methods
 The below function is being used to validate the value of parameter "recurrence_period_duration". As per the policy, its value needs to be lied between 1 day to 60 days. It can not be empty/null and will be sufficed with 's'. If the policy won't be validated successfully, it will generate appropriate message to show the users. This function will have below 2-parameters:
@@ -85,6 +107,7 @@ The below function is being used to validate the value of parameter "inspect_job
   ```
 
 #### Working Code
+The below code will iterate each member of resourceTypesDLPJTMap, which will belong to any resource eg. google_dataproc_cluster etc and each member will have path of its recurrence_period_duration as value. The code will evaluate the recurrence_period_duration's information by using this value and validate the said policy.
 ```
 messages_trigger = {}
 
@@ -106,6 +129,7 @@ for resourceTypesDLPJTMap as key_address, _ {
 }
 ```
 
+The below code will iterate each member of resourceTypesDLPSFMap, which will belong to any resource eg. google_dataproc_cluster etc and each member will have path of its dataset_id as value. The code will evaluate the dataset_id's information by using this value and validate the said policy.
 ```
 messages_save_findings = {}
 
