@@ -25,7 +25,7 @@ resourceTypesSSLEnforceMap = {
 		"key":   	"cluster_config.0.endpoint_config.0.enable_http_port_access",
 	},
 	"example_rsc": {
-	     "key": "someroot.service_account",
+	     "key": "someroot.enable_http_port_access",
 	},
 }
 ```
