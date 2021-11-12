@@ -18,14 +18,14 @@ import "generic-functions" as gen
 |messages| It is being used to hold the complete message of policies violation to show to the user.|
 
 #### Maps
-The below map is having entries of the GCP resources in key/value pair, those are required to be validated for ip restriction policy. Key will be name of the GCP terraform resource ("https://registry.terraform.io/providers/hashicorp/google/latest/docs") and its value will be again combination of key/value pair. Here now key will be ```key``` only and value will be the path of internal_ip_only node. Since this is the generic one and can validate internal ip associated with any google resource. In order to validate, just need to add corresponding entry of particular GCP terraform resource with the path of its service account in the below map as given for google_dataproc_cluster or example_rsc.
+The below map is having entries of the GCP resources in key/value pair, those are required to be validated for ip restriction policy. Key will be name of the GCP terraform resource ("https://registry.terraform.io/providers/hashicorp/google/latest/docs") and its value will be again combination of key/value pair. Here now key will be ```key``` only and value will be the path of internal_ip_only node. Since this is the generic one and can validate internal ip associated with any google resource. In order to validate, just need to add corresponding entry of particular GCP terraform resource with the path of its internal_ip_only in the below map as given for google_dataproc_cluster or example_rsc.
 ```
 resourceTypesInternalIPMap = {	
 	"google_dataproc_cluster": {
 		"key":   "cluster_config.0.gce_cluster_config.0.internal_ip_only",
 	},
     "example_rsc": {
-	     "key": "someroot.service_account",
+	     "key": "someroot.internal_ip_only",
 	},
 }
 ```
