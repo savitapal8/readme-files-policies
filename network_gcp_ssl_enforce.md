@@ -31,7 +31,7 @@ resourceTypesSSLEnforceMap = {
 ```
 
 #### Methods
-The below function is being used to validate the value of parameter "enable_http_port_access". As per the policy, its value can not be true. If the policy will not be validated successfully, it will generate appropriate message to show the users. This function will have below 2-parameters:
+The below function is being used to validate the value of parameter ```enable_http_port_access```. As per the policy, its value can not be true. If the policy will not be validated successfully, it will generate appropriate message to show the users. This function will have below 2-parameters:
 
 * Parameters
 
