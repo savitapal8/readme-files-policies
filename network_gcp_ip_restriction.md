@@ -59,7 +59,7 @@ The below function is being used to validate the value of parameter ```internal_
   ```
 
 #### Working Code
-The below code will iterate each member of resourceTypesInternalIPMa, which will belong to any resource eg. google_dataproc_cluster etc and each member will have path of its internal_ip_only as value. The code will evaluate the internal_ip_only's information by using this value and validate the said policy.
+The below code will iterate each member of resourceTypesInternalIPMap, which will belong to any resource eg. google_dataproc_cluster etc and each member will have path of its internal_ip_only as value. The code will evaluate the internal_ip_only's information by using this value and validate the said policy.
 ```
 messages_ip_internal = {}
 
