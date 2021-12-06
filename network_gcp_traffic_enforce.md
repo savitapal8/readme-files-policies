@@ -199,7 +199,6 @@ GCP_CF_VPCCONNECTOR = rule {
  	length(messages_vpc_connector) is 0 
 }
 
-# Main rule
 print(messages)
 
 main = rule { GCP_CF_INGRESSSETTINGS and GCP_CF_VPCCONNECTOR}
