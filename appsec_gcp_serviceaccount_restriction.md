@@ -17,19 +17,23 @@ import "generic-functions" as gen
 |selected_node|It is being used locally to have information of node by passing the path.|
 |messages|It is being used to hold the complete message of policies violation to show to the user.|
 |default_compute_sa|This is having email id of default compute service account to validate.|
+|default_cloud_function_sa|This is having email id of default cloud function service account to validate.|
 
 #### Maps
-The below map is having entries of the GCP resources in key/value pair, those are required to be validated for Service Account policy. Key will be name of the GCP terraform resource ("https://registry.terraform.io/providers/hashicorp/google/latest/docs") and its value will be again combination of key/value pair. Here now key will be ```key``` only and value will be the path of service account node. Since this is the generic one and can validate service account associated with any google resource. In order to validate, just need to add corresponding entry of particular GCP terraform resource with the path of its service account in the below map as given for ```google_compute_instance``` or ```google_dataproc_cluster``` or ```example_rsc```. 
+The below map is having entries of the GCP resources in key/value pair, those are required to be validated for Service Account policy. Key will be name of the GCP terraform resource ("https://registry.terraform.io/providers/hashicorp/google/latest/docs") and its value will be again combination of key/value pair. Here now key will be ```key``` only and value will be the path of service account node. Since this is the generic one and can validate service account associated with any google resource. In order to validate, just need to add corresponding entry of particular GCP terraform resource with the path of its service account in the below map as given for ```google_dataproc_cluster``` or ```google_cloudfunctions_function``` or ```example_rsc```. 
 ```
 resourceTypesServiceAccountMap = {
-	"google_compute_instance" : {
-		"key":   "service_account.0.email",
-	},
 	"google_dataproc_cluster": {
 		"key":   "cluster_config.0.gce_cluster_config.0.service_account",
+		"default_sa" : default_compute_sa,
+	},
+	"google_cloudfunctions_function" : {
+		"key":   "service_account_email",
+		"default_sa" : default_cloud_function_sa,
 	},
 	"example_rsc": {
-	     "key": "someroot.service_account",
+	     "key": "service_account_node",
+	     "default_sa" : variable name having email id of default service account,
 	},
 }
 ```
@@ -50,30 +54,33 @@ The below function is being used to validate the value of parameter "service_acc
 
 	key = resourceTypesServiceAccountMap[rc.type]["key"]
 	selected_node = plan.evaluate_attribute(rc, key)
-	
-	if types.type_of(selected_node) is "null" {					
-		result = plan.evaluate_attribute(rc.change.after_unknown, key)
 
-		if result is not "null" and result is not true {
+	#print("result: " + plan.to_string(address) + " : " + plan.to_string(selected_node))
+	if types.type_of(selected_node) is "null" or types.type_of(selected_node) is "undefined"{
+
+		result = plan.evaluate_attribute(rc.change.after_unknown, key)
+		#print("result_unknown: " + plan.to_string(address) + " : " + plan.to_string(result))
+		
+		if plan.to_string(result) is "null" or plan.to_string(result) is "undefined"{
 			return address + " service is not having any service account, please assign it"			
 		} else {
 			return null
 		}
 	
 	} else {
-			if types.type_of(selected_node) is "null" {
-				return  address + " service is not having any service account, please assign it"
+			
+			default_sa = resourceTypesServiceAccountMap[rc.type]["default_sa"]
+
+			arr_sa = strings.split(selected_node, default_sa)
+			
+			if length(arr_sa) > 1 {
+				return "The service account of " + address + " service can not be a default compute service account, please change it"						
 			} else {
-					arr_sa = strings.split(selected_node, default_compute_sa)
-					
-					if length(arr_sa) > 1 {
-						return "The service account of " + address + " service can not be a default compute service account, please change it"						
-					} else {
-						return null
-					}
-			}	
+				return null
+			}
+				
 	}	
-  }
+ }
   ```
 
 #### Working Code
