@@ -60,34 +60,15 @@ The below function is being used to validate the value of parameter ```internal_
 		if selected_node is selected_node_result {
 			return null
 		} else {	
-			return plan.to_string(address) + " service will be accessible through internal ip only, please set value " + plan.to_string(selected_node_result) + " to make it as per requirement."			
+			return plan.to_string(address) + " service will be accessible through internal ip only, please set value " + 								plan.to_string(selected_node_result) + " to make it as per requirement."			
 		}
 	}
-}
+  }
   ```
 
 #### Working Code
 The below code will iterate each member of resourceTypesInternalIPMap, which will belong to any resource eg. google_dataproc_cluster or google_sql_database_instance etc and each member will have path of its internal_ip_only or ipv4_enabled as value. The code will evaluate the internal_ip_only or ipv4_enabled information by using this value and validate the said policy.
-```
-messages_ip_internal = {}
 
-for resourceTypesInternalIPMap as key_address, _ {
-	# Get all the instances on the basis of type
-	allResources = plan.find_resources(key_address)
-	for allResources as address, rc {
-		message = null
-		message = check_internal_ip(address, rc)
-
-		if types.type_of(message) is not "null" {
-
-			gen.create_sub_main_key_list(messages, messages_ip_internal, address)
-
-			append(messages_ip_internal[address], message)
-			append(messages[address], message)
-		}
-	}
-}
-```
 
 #### Main Rule
 The main function returns true/false as per value of GCP_INTERNAL_IP 
