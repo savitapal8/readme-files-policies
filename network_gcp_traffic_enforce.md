@@ -23,8 +23,8 @@ The below map is having entries of the GCP resources in key/value pair, those ar
 ```
 resourceTypesTrafficEnforceMap = {	
 	"google_cloudfunctions_function": {
-		"key_ingress":   	"ingress_settings",
-        "key_vpc":   	    "vpc_connector",
+		"key_ingress":      "ingress_settings",
+        	"key_vpc":   	    "vpc_connector",
 		"key_egress":       "vpc_connector_egress_settings",
 	},
 }
