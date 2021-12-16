@@ -18,26 +18,38 @@ import "generic-functions" as gen
 |messages| It is being used to hold the complete message of policies violation to show to the user.|
 
 #### Maps
-The below map is having entries of the GCP resources in key/value pair, those are required to be validated for ip restriction policy. Key will be name of the GCP terraform resource ("https://registry.terraform.io/providers/hashicorp/google/latest/docs") and its value will be again combination of key/value pair. Here now key will be ```key``` only and value will be the path of ```internal_ip_only node for google_dataproc_cluster``` and ```ipv4_enabled node for google_sql_database_instance```. Since this is the generic one and can validate internal ips access associated with any google resource. In order to validate, just need to add corresponding entry of particular GCP terraform resource with the path of its respective node in the below map as given for google_dataproc_cluster or google_sql_database_instance and ```expected_result``` will have expected value for particular google resource.
+The below map is having entries of the GCP resources in key/value pair, those are required to be validated for ip restriction policy. Key will be name of the GCP terraform resource ("https://registry.terraform.io/providers/hashicorp/google/latest/docs") and its value will be again combination of key/value pair. Here now key will be ```key``` only and value will be the path of ```internal_ip_only node for google_dataproc_cluster```, ```ipv4_enabled node for google_sql_database_instance```, ```load_balancing_scheme node for google_compute_forwarding_rule```, ```visibility node for google_dns_managed_zone```, ```enable_private_nodes node for google_container_cluster``` and ```enable_private_endpoint node for google_container_cluster```. Since this is the generic one and can validate internal ips access associated with any google resource. In order to validate, just need to add corresponding entry of particular GCP terraform resource with the path of its respective node in the below map as given for google_dataproc_cluster or google_sql_database_instance or google_compute_forwarding_rule or google_dns_managed_zone or google_container_cluster and ```expected_result``` will have expected value for particular google resource.
 ```
-resourceTypesInternalIPMap = {	
-	"google_dataproc_cluster": {
-		"key": "cluster_config.0.gce_cluster_config.0.internal_ip_only",
-		"expected_result" : true,
-	},
-	"google_sql_database_instance": {
-		"key": "settings.0.ip_configuration.0.ipv4_enabled",
-		"expected_result" : false,
-	},
-    	"example_rsc": {
-	     "key": "path of node",
-	     "expected_result" : whatever expected as per google resource(true/false),
-	},
+resourceTypesInternalIPMap = {
+	"google_dataproc_cluster": [{
+		"key":             "cluster_config.0.gce_cluster_config.0.internal_ip_only",
+		"expected_result":  true,
+	}],
+	"google_sql_database_instance": [{
+		"key":             "settings.0.ip_configuration.0.ipv4_enabled",
+		"expected_result":  false,
+	}],
+	"google_compute_forwarding_rule": [{
+		"key":             "load_balancing_scheme",
+		"expected_result": "INTERNAL_MANAGED",
+	}],
+	"google_dns_managed_zone": [{
+		"key":             "visibility",
+		"expected_result": "private",
+	}],
+	"google_container_cluster": [{
+		"key":             "private_cluster_config.0.enable_private_nodes",
+		"expected_result":  true,
+	}, 
+	{
+		"key":             "private_cluster_config.0.enable_private_endpoint",
+		"expected_result":  true,
+	}],
 }
 ```
 
 #### Methods
-The below function is being used to validate the value of parameter ```internal_ip_only/ipv4_enabled``` As per the policy, its value needs to be true/false as per googel resource and it can not be empty/null. If the policy won't be validated successfully, it will generate appropriate message to show the users. This function will have below 2-parameters:
+The below function is being used to validate the value of parameter ``` internal_ip_only / ipv4_enabled / load_balancing_scheme / visibility / enable_private_nodes / enable_private_endpoint. ``` As per the policy, its value needs to be as per expected result given respectively in map and it can not be empty/null. If the policy won't be validated successfully, it will generate appropriate message to show the users. This function will have below 2-parameters:
 
 * Parameters
 
@@ -48,26 +60,33 @@ The below function is being used to validate the value of parameter ```internal_
 
   ```
   check_internal_ip = func(address, rc) {
+	map_results = resourceTypesInternalIPMap[rc.type]
+	msg_list = null
 
-	key = resourceTypesInternalIPMap[rc.type]["key"]
-	selected_node = plan.evaluate_attribute(rc, key)
-
-	selected_node_result = resourceTypesInternalIPMap[rc.type]["expected_result"]
-
-	if types.type_of(selected_node) is "null" or types.type_of(selected_node) is "undefined" {
-		return plan.to_string(address) + " does not have " + key + " defined"
-	} else {
-		if selected_node is selected_node_result {
-			return null
-		} else {	
-			return plan.to_string(address) + " service will be accessible through internal ip only, please set value " + 								plan.to_string(selected_node_result) + " to make it as per requirement."			
+	for map_results as rec {
+		selected_node = plan.evaluate_attribute(rc, rec.key)
+		selected_node_result = rec.expected_result
+		
+		if types.type_of(selected_node) is "null" or types.type_of(selected_node) is "undefined" {
+			if msg_list is null {
+				msg_list = []
+			}
+			append(msg_list, "It does not have " + rec.key + " defined.")
+		} else {
+			if selected_node is not selected_node_result {				
+				if msg_list is null {
+					msg_list = []
+				}
+				append(msg_list,  "The service should be accessible through internal ip only, please set value of " + rec.key + " to " + plan.to_string(selected_node_result) + " to make it as per requirement.")	       
+			}
 		}
 	}
+	return  msg_list
   }
   ```
 
 #### Working Code
-The below code will iterate each member of resourceTypesInternalIPMap, which will belong to any resource eg. google_dataproc_cluster or google_sql_database_instance etc and each member will have path of its internal_ip_only or ipv4_enabled as value. The code will evaluate the internal_ip_only's or ipv4_enabled's information by using this value and validate the said policy.
+The below code will iterate each member of resourceTypesInternalIPMap, which will belong to any resource eg. google_dataproc_cluster / google_sql_database_instance / google_compute_forwarding_rule / google_dns_managed_zone / google_container_cluster etc and each member will have path of its internal_ip_only or ipv4_enabled as value. The code will evaluate the internal_ip_only / ipv4_enabled / load_balancing_scheme / visibility / enable_private_nodes / enable_private_endpoint's information by using this value and validate the said policy.
 
 ```
 messages_ip_internal = {}
