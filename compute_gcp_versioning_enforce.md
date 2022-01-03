@@ -1,4 +1,4 @@
-### network_gcp_ip_restriction.sentinel
+### compute_gcp_versioning_enforce.sentinel
 ```
 GCP_GKE_RELEASECHANNEL: As per policy, enforce subscription to the STABLE  release channel when the label environment has the value prod.
 GCP_GKE_DATAPLANEV2: As per policy, enforce the use of Dataplane-V2 for GKE network policies.
